@@ -1,0 +1,19 @@
+name: Render Deploy Server
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'services/server/**'
+
+jobs:
+  deploy-webapp:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Render Deploy Server
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          service-id: ${{ secrets.RENDER_SERVER_SERVICE_ID }}
+          api-key: ${{ secrets.RENDER_API_KEY }}

@@ -1,17 +1,19 @@
-name: Render Deploy
+name: Render Deploy WebApp
 
 on:
   push:
     branches:
       - main
+    paths:
+      - 'services/webapp/**'
 
 jobs:
-  deploy:
+  deploy-webapp:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Render Deploy Action
+      - name: Render Deploy WebApp
         uses: johnbeynon/render-deploy-action@v0.0.8
         with:
-          service-id: ${{ secrets.RENDER_SERVICE_ID }}
+          service-id: ${{ secrets.RENDER_WEBAPP_SERVICE_ID }}
           api-key: ${{ secrets.RENDER_API_KEY }}

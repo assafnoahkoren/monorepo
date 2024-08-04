@@ -10,7 +10,7 @@ on:
 jobs:
   deploy-webapp:
     runs-on: ubuntu-latest
-
+    environment: alona-prod
     steps:
       - name: Render Deploy WebApp
         uses: johnbeynon/render-deploy-action@v0.0.8

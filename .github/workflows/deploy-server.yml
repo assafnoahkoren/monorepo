@@ -8,7 +8,7 @@ on:
       - 'services/server/**'
 
 jobs:
-  deploy-webapp:
+  deploy-server:
     runs-on: ubuntu-latest
     environment: alona-prod
     steps:

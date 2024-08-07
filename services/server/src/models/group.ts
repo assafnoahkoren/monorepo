@@ -6,4 +6,5 @@ class Group {
     phoneNumber: string;
 }
 
+export type GroupId = string;
 export default Group;

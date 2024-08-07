@@ -4,3 +4,6 @@ class Allocation {
     locationId: string;
     residenceId: string;
 }
+
+export type AllocationId = string;
+export default Allocation;

@@ -5,7 +5,6 @@ import {faker, fakerHE} from "@faker-js/faker";
 import Location from "../models/location";
 import Residence from "../models/residence";
 
-@Injectable()
 export class ScenarioGeneratorService {
     generateScenario(groupsCount: number, locationsCount: number, residencesCount: number): Scenario {
         return  {

@@ -6,4 +6,5 @@ class Location {
     residences: Residence[];
 }
 
+export type LocationId = string;
 export default Location;

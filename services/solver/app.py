@@ -1,13 +1,14 @@
 import math
 from collections import defaultdict
 from time import sleep
+from typing import Tuple
 
 import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
 import time
 import io
 import csv
+
+from rpds import List
 
 PEOPLE_PER_ROOM = 5
 
@@ -55,6 +56,9 @@ def load_regions(file):
             name = row[0]
             population = int(row[1])
             regions.append(Region(name, population))
+
+    # sort regions by population
+    regions.sort(key=lambda x: x.population)
     return regions
 
 
@@ -79,7 +83,6 @@ def get_first_hotel_with_rooms(rooms_left_map):
 
 
 def run_algorithm(regions, hotels):
-    st.write("מתחיל את הר")
     start_time = time.time()
     hotels_map = {hotel.id: hotel for hotel in hotels}
     regions_map = {region.name: region for region in regions}
@@ -89,9 +92,11 @@ def run_algorithm(regions, hotels):
     # init rooms_left_map
     for hotel in hotels:
         rooms_left_map[hotel.id] = hotel.available_rooms
-
+    allocations_csv = []
     for region in regions:
         st.write(f"Looking for rooms for '{region.name}'")
+        with st.spinner(f"מחשב..."):
+            sleep(0.5)
         rooms_needed = region.rooms_needed
         while rooms_needed > 0:
             hotel_id = get_first_hotel_with_rooms(rooms_left_map)
@@ -109,11 +114,23 @@ def run_algorithm(regions, hotels):
         st.table([
             {
                 "hotel": hotel_name,
-                "People Assigned": allocations[hotel_name]
+                "Rooms Assigned": allocations[hotel_name]
             }
             for hotel_name in allocations.keys()
         ])
+        for hotel_name in allocations.keys():
+            allocations_csv.append((region.name, hotel_name, allocations[hotel_name]))
 
+    # print allocations_csv
+
+    st.table([
+        {
+            "region": region,
+            "hotel": hotel,
+            "rooms": rooms
+        }
+        for region, hotel, rooms in allocations_csv
+    ])
     end_time = time.time()
     return {
         "time": end_time - start_time
@@ -160,7 +177,8 @@ if regions_file and hotels_file:
             st.error("No valid data found in the Hotels CSV. Please check the file format.")
         else:
             if st.sidebar.button("Run Algorithm"):
-                result = run_algorithm(regions, hotels)
+                with st.spinner("Running Algorithm..."):
+                    result = run_algorithm(regions, hotels)
 
                 st.success("הרצה הסתיימה בהצלחה!")
 

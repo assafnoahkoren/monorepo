@@ -14,6 +14,9 @@ import {
 import GroupsInputSection from "./GroupsInputSection.tsx";
 import ResidencesInputSection from "./ResidencesInputSection.tsx";
 import SettingsSection from "./SettingsSection.tsx";
+import ResultsSection from "./ResultsSection.tsx";
+import {observer} from "mobx-react-lite";
+import rootStore from "../../RootStore.ts";
 
 interface GroupAssignmentComponentProps {
 }
@@ -33,7 +36,7 @@ const GroupAssignment: React.FC<GroupAssignmentComponentProps> = props => {
                     <Tabs.Tab value="settings" leftSection={<IconSettings style={iconStyle}/>}>
                         הגדרות
                     </Tabs.Tab>
-                    <Tabs.Tab value="results" leftSection={<IconReportAnalytics style={iconStyle}/>}>
+                    <Tabs.Tab disabled={!rootStore.groupAssignmentStore.assignments} value="results" leftSection={<IconReportAnalytics style={iconStyle}/>}>
                         תוצאות
                     </Tabs.Tab>
                 </Tabs.List>
@@ -51,11 +54,11 @@ const GroupAssignment: React.FC<GroupAssignmentComponentProps> = props => {
                 </Tabs.Panel>
 
                 <Tabs.Panel value="results">
-                    Settings tab content
+                    <ResultsSection />
                 </Tabs.Panel>
             </Tabs>
         </div>
     );
 };
 
-export default GroupAssignment;
+export default observer(GroupAssignment);

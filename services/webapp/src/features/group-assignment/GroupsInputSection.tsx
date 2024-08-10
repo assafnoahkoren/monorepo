@@ -2,11 +2,10 @@ import React, {useState} from 'react';
 import {AgGridReact, AgGridReactProps} from 'ag-grid-react';
 import {Container, FileInput} from "@mantine/core";
 import {IconFile} from "@tabler/icons-react";
+import {Group} from "./Types.ts";
+import rootStore from "../../RootStore.ts";
 
-type RowDataType = {
-    name: string,
-    rooms: number,
-}
+type RowDataType = Group;
 
 interface GroupsInputSectionProps {
 }
@@ -39,6 +38,7 @@ const GroupsInputSection: React.FC<GroupsInputSectionProps> = props => {
 
 
                 setRowData(rowsArray);
+                rootStore.groupAssignmentStore.groups = rowsArray;
                 // Do something with rowsArray if needed
             } catch (error) {
                 console.error('Error reading file:', error);

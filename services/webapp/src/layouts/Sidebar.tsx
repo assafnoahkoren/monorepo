@@ -2,11 +2,7 @@ import { useState } from 'react';
 import {Group, Image, Text, Badge} from '@mantine/core';
 import {
     IconBellRinging,
-    IconFingerprint,
-    IconKey,
     IconSettings,
-    Icon2fa,
-    IconDatabaseImport,
     IconLogout, IconBuildingSkyscraper,
 } from '@tabler/icons-react';
 import classes from './Sidebar.module.css';

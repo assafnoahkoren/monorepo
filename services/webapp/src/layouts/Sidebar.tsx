@@ -1,19 +1,17 @@
 import { useState } from 'react';
 import {Group, Image, Text, Badge} from '@mantine/core';
 import {
-    IconBellRinging,
     IconSettings,
     IconLogout, IconBuildingSkyscraper,
 } from '@tabler/icons-react';
 import classes from './Sidebar.module.css';
 
 const data = [
-    { link: '', label: 'התראות', icon: IconBellRinging },
     { link: '', label: 'שיבוץ למלונות', icon: IconBuildingSkyscraper },
 ];
 
 export function Sidebar() {
-    const [active, setActive] = useState('Billing');
+    const [active, setActive] = useState('שיבוץ למלונות');
 
     const links = data.map((item) => (
         <a

@@ -6,9 +6,13 @@ import {Group} from "@mantine/core";
 const ProtectedLayout: React.FC = () => {
     return (
         <div className="ProtectedLayout w-full h-full">
-            <Group className="h-full">
-                <Sidebar/>
-                <Outlet/>
+            <Group className="h-full gap-0">
+                <div className="h-full">
+                    <Sidebar/>
+                </div>
+                <div className="h-full flex-1">
+                    <Outlet/>
+                </div>
             </Group>
         </div>
     );

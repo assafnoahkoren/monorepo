@@ -51,12 +51,17 @@ export class GroupAssignmentStore {
         this.residences?.forEach(residence => {
             residencesMap[residence.id] = residence;
         });
+        this.residences = this.residences.sort((a, b) => a.rooms - b.rooms);
         const groupsMap: any = {}
         this.groups?.forEach(group => {
             groupsMap[group.name] = group;
         });
 
         const assignments: Assignments = {};
+        const groupsNeededRoomsMap: Record<string, number> = {};
+        for (const group of this.groups) {
+            groupsNeededRoomsMap[group.name] = group.rooms;
+        }
         const roomsLeftMap: Record<string, number> = {};
         // Init roomsLeftMap
         for (const residence of this.residences) {
@@ -66,21 +71,21 @@ export class GroupAssignmentStore {
         const sortedGroups = this.groups.sort((a, b) => a.rooms - b.rooms);
         console.log(sortedGroups);
         for (const group of this.groups) {
-            let roomsNeeded = group.rooms;
-            while (roomsNeeded > 0) {
+            while (groupsNeededRoomsMap[group.name] > 0) {
                 const residence = getResidenceLogic(group, this.residences, roomsLeftMap);
                 if (!residence) {
                     this.nullAssignments[group.name] = this.nullAssignments[group.name] || 0;
                     this.nullAssignments[group.name] += 1;
-                    roomsNeeded -= 1;
+                    groupsNeededRoomsMap[group.name] -= 1;
                 } else {
+                    const roomsToTake = Math.min(groupsNeededRoomsMap[group.name], roomsLeftMap[residence.id]);
                     let roomsLeft = roomsLeftMap[residence.id];
-                    roomsLeft -= 1;
-                    roomsNeeded -= 1;
+                    roomsLeft -= roomsToTake;
+                    groupsNeededRoomsMap[group.name] -= roomsToTake;
                     roomsLeftMap[residence.id] = roomsLeft;
                     assignments[group.name] = assignments[group.name] || {}; // Initialize the object if it doesn't exist
                     assignments[group.name][residence.name] =  assignments[group.name][residence.name] || 0; // Initialize the number if it doesn't exist
-                    assignments[group.name][residence.name] += 1;
+                    assignments[group.name][residence.name] += roomsToTake;
 
                 }
             }
@@ -105,11 +110,22 @@ export class GroupAssignmentStore {
         // turn into percentage and keep 0 decimal places
         percentageOfAssignedRooms = Math.round(percentageOfAssignedRooms * 100);
 
+        let groupsThatWasSplit = []
+        for (const groupName in this.assignments) {
+            const assignment = this.assignments[groupName];
+            if (Object.keys(assignment).length > 1) {
+                // If the group has more than one residence, it means that it was split
+                groupsThatWasSplit.push(groupName);
+            } else if (Object.keys(assignment).length === 1 && Object.keys(this.nullAssignments).includes(groupName)) {
+                groupsThatWasSplit.push(assignment);
+            }
+        }
 
         return {
             numberOfAssignedRooms: millify(numberOfAssignedRooms),
             numberOfUnassignedRooms: millify(numberOfUnassignedRooms),
             percentageOfAssignedRooms: percentageOfAssignedRooms,
+            groupsThatWasSplit: groupsThatWasSplit,
         };
 
     }
@@ -159,19 +175,26 @@ export class GroupAssignmentStore {
 function getResidenceLogic(group: Group, residences: Residence[], roomsLeftMap: Record<string, number>): Residence | null {
     let bestMatch: Residence | null = null;
     for (const residence of residences) {
-        if (roomsLeftMap[residence.id] === 0) continue;
+        const roomsLeft = roomsLeftMap[residence.id];
+        const bestMatchRoomsLeft = bestMatch?.id ? roomsLeftMap[bestMatch?.id] : 0;
+        if (roomsLeft === 0) continue;
         if (!bestMatch) {
             bestMatch = residence;
             continue;
         }
-        const bestMatchCanFitAll = bestMatch.rooms >= group.rooms;
-        const currentResidenceCanFitAll = residence.rooms >= group.rooms;
+        const bestMatchCanFitAll = bestMatchRoomsLeft >= group.rooms;
+        const currentResidenceCanFitAll = roomsLeft >= group.rooms;
         if (!bestMatchCanFitAll && currentResidenceCanFitAll) {
             bestMatch = residence;
             continue;
         }
         if (bestMatchCanFitAll && currentResidenceCanFitAll) {
-            if (bestMatch.rooms > residence.rooms) {
+            if (bestMatchRoomsLeft > roomsLeft) {
+                bestMatch = residence;
+            }
+        }
+        if (!bestMatchCanFitAll && !currentResidenceCanFitAll) {
+            if (bestMatchRoomsLeft > roomsLeft) {
                 bestMatch = residence;
             }
         }

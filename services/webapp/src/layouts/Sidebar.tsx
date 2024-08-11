@@ -18,6 +18,7 @@ export const Sidebar = observer(() => {
     const numberOfRoomsAvailable = rootStore.groupAssignmentStore.getTotalRoomsAvailable();
     const residences = rootStore.groupAssignmentStore.residences || [];
     const assignmentsStatistics = rootStore.groupAssignmentStore.getAssignmentsStatistics();
+    const nullAssignments = rootStore.groupAssignmentStore.nullAssignments;
     const [active, setActive] = useState('שיבוץ למלונות');
 
     const links = data.map((item) => (
@@ -94,7 +95,16 @@ export const Sidebar = observer(() => {
                             </Stack>
                         }
                     />
-
+                    <Group justify="space-evenly" className="mt-4">
+                        <Paper radius="md" p="xs" className="bg-red-100 text-red-500 flex-1 h-24 flex flex-col items-center justify-center">
+                            <Text fz="h1" fw="700">{assignmentsStatistics?.groupsThatWasSplit.length || 0}</Text>
+                            <Text fz="xs" className="opacity-80 text-red-800">ישובים שפוצלו</Text>
+                        </Paper>
+                        <Paper radius="md" p="xs" className="bg-red-100 text-red-500 flex-1 h-24 flex flex-col items-center justify-center">
+                            <Text fz="h1" fw="700">{Object.keys(nullAssignments).length || 0}</Text>
+                            <Text fz="xs" className="opacity-80 text-red-800">יישובים ללא חדרים</Text>
+                        </Paper>
+                    </Group>
                 </Stack>
             </div>
 

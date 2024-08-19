@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,10 +7,60 @@ datasource db {
   url      = env("PG_DATABASE_URL")
 }
 
-model User {
-  id    String  @id @default(cuid())
-  email String  @unique
-  name  String?
+model Account {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
+}
+
+model UserAnswer {
+  id             Int     @id @default(autoincrement())
+  idNumber       String  @unique
+  fullName       String
+  settlementCode Int
+  accessibility  Boolean
+  pets           Boolean
+  numberOfPeople Int
+  hotelOption1   String?
+  hotelOption2   String?
+  hotelOption3   String?
+  selectedHotel  String?
+
+  settlement Settlement @relation(fields: [settlementCode], references: [id])
+}
+
+model Settlement {
+  id          Int          @id @default(autoincrement())
+  code        Int          @unique
+  name        String
+  alias1      String?
+  alias2      String?
+  alias3      String?
+  userAnswers UserAnswer[]
+}
+
+model Group {
+  id          Int          @id
+  name        String
+  roomsNeeded Int
+  Allocation  Allocation[]
+}
+
+model Residence {
+  id             Int          @id
+  name           String
+  availableRooms Int
+  Allocation     Allocation[]
+}
+
+model Allocation {
+  id          Int @id @default(autoincrement())
+  groupId     Int
+  locationId  Int
+  residenceId Int
+
+  group     Group     @relation(fields: [groupId], references: [id])
+  residence Residence @relation(fields: [residenceId], references: [id])
 }

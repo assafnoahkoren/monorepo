@@ -5,7 +5,6 @@ import {
 import PublicLayout from "../layouts/PublicLayout.tsx";
 import ProtectedLayout from "../layouts/ProtectedLayout.tsx";
 
-
 const router = createBrowserRouter([
     {
         element: <PublicLayout />,
@@ -22,8 +21,12 @@ const router = createBrowserRouter([
             {
                 path: '',
                 lazy: () => import("../pages/HomePage.tsx")
-            }
+            },
         ]
+    },
+    {
+      path: 'voucher/:voucherId/verify',
+        lazy: () => import("../pages/VoucherVerifyPage.tsx")
     },
     {
         path: '*',

@@ -46,40 +46,37 @@ const state = {
 
 let GLOBAL_SEQUENCE = 1000;
 
-// state.groups = [
-//     {
-//         id: "כפר ורדים",
-//         "name": "כפר ורדים",
-//         "rooms": 100
-//     },
-//     {
-//         id: "דפנה",
-//         "name": "דפנה",
-//         "rooms": 200
-//     }
-// ]
-// state.residences = [
-//     {
-//         "id": "מלון דן",
-//         "name": "מלון דן",
-//         "rooms": 120
-//     },
-//     {
-//         "id": "מלון לאונרדו",
-//         "name": "מלון לאונרדו",
-//         "rooms": 90
-//     }
-// ]
-// state.allocations = {
-//     "כפר ורדים": {
-//         "מלון דן": 100
-//     },
-//     "דפנה": {
-//         "מלון דן": 2,
-//         "מלון לאונרדו": 4
-//     }
-// }
-// state.allocationsLeft = {...state.allocations}
+state.groups = [
+    {
+        id: "כפר ורדים",
+        "name": "כפר ורדים",
+        "rooms": 100
+    },
+    {
+        id: "דפנה",
+        "name": "דפנה",
+        "rooms": 200
+    }
+]
+state.residences = [
+    {
+        "id": "מלון דן",
+        "name": "מלון דן",
+        "rooms": 120
+    },
+    {
+        "id": "מלון לאונרדו",
+        "name": "מלון לאונרדו",
+        "rooms": 90
+    }
+]
+state.allocations = {
+    "דפנה": {
+        "מלון דן": 2,
+        "מלון לאונרדו": 4
+    }
+}
+state.allocationsLeft = JSON.parse(JSON.stringify(state.allocations));
 
 
 @Controller()
@@ -109,7 +106,7 @@ export class AppController {
         state.groups = body.groups;
         state.residences = body.residences;
         state.allocations = roomAllocator.assignments;
-        state.allocationsLeft = {...state.allocations};
+        state.allocationsLeft = JSON.parse(JSON.stringify(state.allocations));
 
         return {
             query: query,
@@ -144,7 +141,7 @@ export class AppController {
     @Post('/reserve')
     reserve(@Query() query: ReserveQuery): any {
         let allocation = state.allocationsLeft[query.settlement];
-        allocation = Object.fromEntries(Object.entries(allocation).filter(([key, value]) => value > 0));
+        allocation = Object.fromEntries(Object.entries(allocation ?? {}).filter(([key, value]) => value > 0));
         if (allocation[query.residence] === undefined) {
             if (Object.keys(allocation).length === 0) {
                 return {

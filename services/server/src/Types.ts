@@ -15,4 +15,4 @@ export type AssignmentSettings = {
 
 export type GroupName = string;
 export type ResidenceName = string;
-export type Assignments = Record<GroupName, Record<ResidenceName, number>>;
+export type Allocations = Record<GroupName, Record<ResidenceName, number>>;

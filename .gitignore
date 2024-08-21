@@ -1,2 +1,3 @@
 volumes
 .idea
+/node_modules/

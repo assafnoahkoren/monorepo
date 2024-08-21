@@ -1,11 +1,11 @@
-import { Assignments, AssignmentSettings, Group, GroupName, Residence } from "./Types";
+import { Allocations, AssignmentSettings, Group, GroupName, Residence } from "./Types";
 import millify from "millify";
 
 export class RoomAllocator {
   groups?: Group[] = undefined;
   residences?: Residence[] = undefined;
   settings?: AssignmentSettings = undefined;
-  assignments?: Assignments = undefined;
+  assignments?: Allocations = undefined;
   nullAssignments: Record<GroupName, number> = {};
   duration?: number = undefined;
 
@@ -58,7 +58,7 @@ export class RoomAllocator {
       groupsMap[group.name] = group;
     });
 
-    const assignments: Assignments = {};
+    const assignments: Allocations = {};
     const groupsNeededRoomsMap: Record<string, number> = {};
     for (const group of this.groups) {
       groupsNeededRoomsMap[group.name] = group.rooms;

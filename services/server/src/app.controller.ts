@@ -46,40 +46,40 @@ const state = {
 
 let GLOBAL_SEQUENCE = 1000;
 
-state.groups = [
-    {
-        id: "כפר ורדים",
-        "name": "כפר ורדים",
-        "rooms": 100
-    },
-    {
-        id: "דפנה",
-        "name": "דפנה",
-        "rooms": 200
-    }
-]
-state.residences = [
-    {
-        "id": "מלון דן",
-        "name": "מלון דן",
-        "rooms": 120
-    },
-    {
-        "id": "מלון לאונרדו",
-        "name": "מלון לאונרדו",
-        "rooms": 90
-    }
-]
-state.allocations = {
-    "כפר ורדים": {
-        "מלון דן": 100
-    },
-    "דפנה": {
-        "מלון דן": 2,
-        "מלון לאונרדו": 4
-    }
-}
-state.allocationsLeft = {...state.allocations}
+// state.groups = [
+//     {
+//         id: "כפר ורדים",
+//         "name": "כפר ורדים",
+//         "rooms": 100
+//     },
+//     {
+//         id: "דפנה",
+//         "name": "דפנה",
+//         "rooms": 200
+//     }
+// ]
+// state.residences = [
+//     {
+//         "id": "מלון דן",
+//         "name": "מלון דן",
+//         "rooms": 120
+//     },
+//     {
+//         "id": "מלון לאונרדו",
+//         "name": "מלון לאונרדו",
+//         "rooms": 90
+//     }
+// ]
+// state.allocations = {
+//     "כפר ורדים": {
+//         "מלון דן": 100
+//     },
+//     "דפנה": {
+//         "מלון דן": 2,
+//         "מלון לאונרדו": 4
+//     }
+// }
+// state.allocationsLeft = {...state.allocations}
 
 
 @Controller()
@@ -109,6 +109,7 @@ export class AppController {
         state.groups = body.groups;
         state.residences = body.residences;
         state.allocations = roomAllocator.assignments;
+        state.allocationsLeft = {...state.allocations};
 
         return {
             query: query,

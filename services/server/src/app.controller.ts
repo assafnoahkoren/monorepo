@@ -80,7 +80,9 @@ export class AppController {
       query: query,
       status: "success",
       reservationId: "123456789",
-      reservationLink: "https://alona.live/reservation/123456789"
+      reservationLink: "https://alona.live/reservation/123456789",
+      residence: "מלון דן",
+      rooms: 2
     };
   }
 }

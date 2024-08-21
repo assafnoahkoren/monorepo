@@ -1,0 +1,8 @@
+{
+  "private": true,
+  "name": "mymonorepo",
+  "workspaces": [
+    "services/database",
+    "services/server"
+  ]
+}

@@ -42,24 +42,24 @@ model Settlement {
 }
 
 model Group {
-  id          Int          @id
+  id          String       @id
   name        String
   roomsNeeded Int
   Allocation  Allocation[]
 }
 
 model Residence {
-  id             Int          @id
+  id             String       @id
   name           String
   availableRooms Int
   Allocation     Allocation[]
 }
 
 model Allocation {
-  id          Int @id @default(autoincrement())
-  groupId     Int
+  id          Int    @id @default(autoincrement())
+  groupId     String
   locationId  Int
-  residenceId Int
+  residenceId String
 
   group     Group     @relation(fields: [groupId], references: [id])
   residence Residence @relation(fields: [residenceId], references: [id])

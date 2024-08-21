@@ -14,6 +14,18 @@ type RunScenarioQuery = {
   groups: string;
 }
 
+type CheckAvailabilityQuery = {
+  residence: string;
+}
+
+type ReserveQuery = {
+  residence: string;
+  settlement: string;
+  amount: number;
+  idNumber: string;
+  phoneNumber: string;
+}
+
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
@@ -40,6 +52,35 @@ export class AppController {
       query: query,
       body: body,
       results: results
+    };
+  }
+
+  @Get('/availability')
+  checkAvailability(@Query() query: CheckAvailabilityQuery): any {
+    return {
+      query: query,
+      availableResidences: [
+        {
+          id: "1",
+          name: "מלון דן",
+          roomsLeft: 10
+        },
+        {
+          id: "2",
+          name: "מלון לאונרדו",
+          roomsLeft: 12
+        },
+      ]
+    };
+  }
+
+  @Post('/reserve')
+  reserve(@Query() query: ReserveQuery): any {
+    return {
+      query: query,
+      status: "success",
+      reservationId: "123456789",
+      reservationLink: "https://alona.live/reservation/123456789"
     };
   }
 }

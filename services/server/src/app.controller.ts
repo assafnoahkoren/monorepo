@@ -15,7 +15,7 @@ type RunScenarioQuery = {
 }
 
 type CheckAvailabilityQuery = {
-  residence: string;
+  settlement: string;
 }
 
 type ReserveQuery = {

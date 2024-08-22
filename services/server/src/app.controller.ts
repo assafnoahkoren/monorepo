@@ -122,7 +122,7 @@ export class AppController {
 
     @Get('/availability')
     checkAvailability(@Query() query: CheckAvailabilityQuery): any {
-        let allocation = state.allocationsLeft[query.settlement];
+        let allocation = state.allocationsLeft[query.settlement] ?? {};
         allocation = Object.fromEntries(Object.entries(allocation).filter(([key, value]) => value > 0));
 
         return {
@@ -140,8 +140,8 @@ export class AppController {
 
     @Post('/reserve')
     reserve(@Query() query: ReserveQuery): any {
-        let allocation = state.allocationsLeft[query.settlement];
-        allocation = Object.fromEntries(Object.entries(allocation ?? {}).filter(([key, value]) => value > 0));
+        let allocation = state.allocationsLeft[query.settlement] ?? {};
+        allocation = Object.fromEntries(Object.entries(allocation).filter(([key, value]) => value > 0));
         if (allocation[query.residence] === undefined) {
             if (Object.keys(allocation).length === 0) {
                 return {

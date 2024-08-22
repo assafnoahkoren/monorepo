@@ -30,41 +30,23 @@ const VoucherVerifyPage: FC = () => {
           setIsError(false);
         } else {
           setIsError(true);
-          if (result.relevantHotelName) {
-            modals.open({
-              children: (
-                <Stack align="center" gap="sm">
-                  <IconExclamationCircleFilled size={72} color="red" />
-                  <Title order={3}>קוד זה אינו תואם את המלון</Title>
-                  <Text>
-                    זהו אינו קוד המלון אליו הופנה התושב/ת.
-                    <br />
-                    יש לגשת למלון {result.relevantHotelName}.
-                  </Text>
-                  <Button variant="filled" onClick={() => modals.closeAll()}>
-                    הקלדה מחדש של הקוד
-                  </Button>
-                </Stack>
-              ),
-              centered: true,
-              withCloseButton: false,
-            });
-          } else {
-            modals.open({
-              children: (
-                <Stack align="center" gap="sm">
-                  <IconExclamationCircleFilled size={72} color="red" />
-                  <Title order={3}>קוד שגוי</Title>
-                  <Text>הקוד שהזנת שגוי. יש להזין מחדש.</Text>
-                  <Button variant="filled" onClick={() => modals.closeAll()}>
-                    הקלדה מחדש של הקוד
-                  </Button>
-                </Stack>
-              ),
-              centered: true,
-              withCloseButton: false,
-            });
-          }
+          modals.open({
+            children: (
+              <Stack align="center" gap="sm">
+                <IconExclamationCircleFilled size={72} color="red" />
+                <Title order={3}>קוד זה אינו תואם את המלון</Title>
+                <Text>
+                  ניתן להקליד שוב במידה והיתה שגיאה בהקלדת הקוד, או להפנות את הפונה למלון {result.relevantHotelName}{' '}
+                  אליו קיבל את השובר
+                </Text>
+                <Button variant="filled" onClick={() => modals.closeAll()}>
+                  הקלדה מחדש של הקוד
+                </Button>
+              </Stack>
+            ),
+            centered: true,
+            withCloseButton: false,
+          });
         }
       })
       .finally(() => {
@@ -147,32 +129,27 @@ const VoucherVerifyPage: FC = () => {
 
 const validateHotelCode = async (hotelCode: string, voucherId: string) => {
   // TODO: Need to make an API call and check is the hotel code is valid and matched to the relevant voucher
-  return new Promise<
-    | { isValid: true; voucherDetails: VoucherDetails }
-    | { isValid: false; relevantHotelName: string }
-    | { isValid: false }
-  >((resolve) => {
-    setTimeout(() => {
-      const randomNumber = Math.floor(Math.random() * 3) + 1;
-      if (hotelCode === '1234') {
-        resolve({
-          isValid: true,
-          voucherDetails: {
-            firstName: 'ישראל',
-            lastName: 'ישראלי',
-            idNumber: '305632689',
-            soulsNumber: 3,
-            hasPet: true,
-            isAccessibleRoom: false,
-          },
-        });
-      } else if (hotelCode === '1235') {
-        resolve({ isValid: false, relevantHotelName: 'דן תל אביב' });
-      } else {
-        resolve({ isValid: false });
-      }
-    }, 1000);
-  });
+  return new Promise<{ isValid: true; voucherDetails: VoucherDetails } | { isValid: false; relevantHotelName: string }>(
+    (resolve) => {
+      setTimeout(() => {
+        if (hotelCode === '1234') {
+          resolve({
+            isValid: true,
+            voucherDetails: {
+              firstName: 'ישראל',
+              lastName: 'ישראלי',
+              idNumber: '305632689',
+              soulsNumber: 3,
+              hasPet: true,
+              isAccessibleRoom: false,
+            },
+          });
+        } else {
+          resolve({ isValid: false, relevantHotelName: 'דן תל אביב' });
+        }
+      }, 1000);
+    },
+  );
 };
 
 interface VoucherDetails {

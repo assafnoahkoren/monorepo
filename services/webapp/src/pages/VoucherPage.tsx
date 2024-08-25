@@ -1,18 +1,55 @@
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Alert, Anchor, Card, Group, Image, Stack, Text, Title } from '@mantine/core';
-import { IconInfoCircle } from '@tabler/icons-react';
+import { Alert, Anchor, Card, Flex, Group, Image, Loader, Stack, Text, Title } from '@mantine/core';
+import { IconInfoCircle, IconExclamationCircle } from '@tabler/icons-react';
 import QRCode from 'react-qr-code';
+import axios from 'axios';
 
 const VoucherVerifyPage: FC = () => {
   const { voucherId } = useParams();
+  const [hotelName, setHotelName] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
+
+  useEffect(() => {
+    const fetchHotelName = () => {
+      setIsLoading(true);
+      axios
+        .get('http://localhost:3001/reservation', { params: { id: voucherId } })
+        .then((res) => {
+          if (res.data.reservation) {
+            setHotelName(res.data.reservation.residence);
+          } else {
+            setIsError(true);
+          }
+        })
+        .catch(() => {
+          setIsError(true);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    };
+
+    fetchHotelName();
+  }, [voucherId]);
 
   if (!voucherId) {
     // TODO: Show error or redirect to different page
     return null;
   }
 
-  return (
+  return isLoading ? (
+    <Flex className="h-full" justify="center" align="center">
+      <Loader color="blue" />
+    </Flex>
+  ) : isError ? (
+    <Flex className="h-full" justify="center" align="center">
+      <Alert variant="light" color="red" title="שגיאה" icon={<IconExclamationCircle />}>
+        שגיאה לא צפויה, אנא נסו שוב
+      </Alert>
+    </Flex>
+  ) : (
     <Stack className="h-full bg-[#F5F8FA]" p="sm" align="center" gap="lg">
       <Group gap="sm" className="pt-2">
         <Image src="/ministry-of-tourism-logo.png" width={60} height={60} />
@@ -27,7 +64,7 @@ const VoucherVerifyPage: FC = () => {
             <Text span>
               <Text span>ממתינים להגעתכם ב-</Text>{' '}
               <Text fw={700} span>
-                קלאב הוטל טבריה
+                {hotelName}
               </Text>
             </Text>
             <Group gap="xs">

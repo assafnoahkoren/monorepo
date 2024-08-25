@@ -9,6 +9,7 @@ import {
   IconInfoCircle,
   IconXboxX,
 } from '@tabler/icons-react';
+import axios from 'axios';
 
 const VoucherVerifyPage: FC = () => {
   const { voucherId } = useParams();
@@ -26,7 +27,7 @@ const VoucherVerifyPage: FC = () => {
     validateHotelCode(value, voucherId)
       .then((result) => {
         if (result.isValid) {
-          setVoucherDetails(result.voucherDetails);
+          setVoucherDetails(result.reservation);
           setIsError(false);
         } else {
           setIsError(true);
@@ -36,8 +37,8 @@ const VoucherVerifyPage: FC = () => {
                 <IconExclamationCircleFilled size={72} color="red" />
                 <Title order={3}>קוד זה אינו תואם את המלון</Title>
                 <Text>
-                  ניתן להקליד שוב במידה והיתה שגיאה בהקלדת הקוד, או להפנות את הפונה למלון {result.relevantHotelName}{' '}
-                  אליו קיבל את השובר
+                  ניתן להקליד שוב במידה והיתה שגיאה בהקלדת הקוד, או להפנות את הפונה למלון {result.residenceName} אליו
+                  קיבל את השובר
                 </Text>
                 <Button variant="filled" onClick={() => modals.closeAll()}>
                   הקלדה מחדש של הקוד
@@ -63,7 +64,7 @@ const VoucherVerifyPage: FC = () => {
       {voucherDetails ? (
         <Stack gap="lg">
           <Alert variant="light" color="gray" icon={<IconInfoCircle />}>
-            יש לוודא כי אלה פרטי התושב/ת הנכונים ורק לאחר מכן ללחוץ על כפתור ‘שליחה’
+            יש לוודא כי אלה פרטי התושב/ת הנכונים
           </Alert>
           <Card shadow="sm" padding="lg" radius="md" withBorder>
             <Stack gap="md">
@@ -77,26 +78,26 @@ const VoucherVerifyPage: FC = () => {
               </Box>
               <Box>
                 <Text>מספר נפשות</Text>
-                <Text fw={700}>{voucherDetails.soulsNumber}</Text>
+                <Text fw={700}>{voucherDetails.amount}</Text>
               </Box>
-              <Group gap="xs">
-                <Image src="/animals.png" width={36} height={36} />
-                <Text fw={700}>חיית מחמד</Text>
-                {voucherDetails.hasPet ? (
-                  <IconCircleCheck color="green" size={36} />
-                ) : (
-                  <IconXboxX color="red" size={36} />
-                )}
-              </Group>
-              <Group gap="xs">
-                <Image src="/disabled-man.png" width={36} height={36} />
-                <Text fw={700}>חדר נגיש</Text>
-                {voucherDetails.isAccessibleRoom ? (
-                  <IconCircleCheck color="green" size={36} />
-                ) : (
-                  <IconXboxX color="red" size={36} />
-                )}
-              </Group>
+              {/*<Group gap="xs">*/}
+              {/*  <Image src="/animals.png" width={36} height={36} />*/}
+              {/*  <Text fw={700}>חיית מחמד</Text>*/}
+              {/*  {voucherDetails.hasPet ? (*/}
+              {/*    <IconCircleCheck color="green" size={36} />*/}
+              {/*  ) : (*/}
+              {/*    <IconXboxX color="red" size={36} />*/}
+              {/*  )}*/}
+              {/*</Group>*/}
+              {/*<Group gap="xs">*/}
+              {/*  <Image src="/disabled-man.png" width={36} height={36} />*/}
+              {/*  <Text fw={700}>חדר נגיש</Text>*/}
+              {/*  {voucherDetails.isAccessibleRoom ? (*/}
+              {/*    <IconCircleCheck color="green" size={36} />*/}
+              {/*  ) : (*/}
+              {/*    <IconXboxX color="red" size={36} />*/}
+              {/*  )}*/}
+              {/*</Group>*/}
             </Stack>
           </Card>
           <Button variant="filled" leftSection={<IconCamera size={14} />} onClick={() => setVoucherDetails(null)}>
@@ -128,37 +129,22 @@ const VoucherVerifyPage: FC = () => {
 };
 
 const validateHotelCode = async (hotelCode: string, voucherId: string) => {
-  // TODO: Need to make an API call and check is the hotel code is valid and matched to the relevant voucher
-  return new Promise<{ isValid: true; voucherDetails: VoucherDetails } | { isValid: false; relevantHotelName: string }>(
-    (resolve) => {
-      setTimeout(() => {
-        if (hotelCode === '1234') {
-          resolve({
-            isValid: true,
-            voucherDetails: {
-              firstName: 'ישראל',
-              lastName: 'ישראלי',
-              idNumber: '305632689',
-              soulsNumber: 3,
-              hasPet: true,
-              isAccessibleRoom: false,
-            },
-          });
-        } else {
-          resolve({ isValid: false, relevantHotelName: 'דן תל אביב' });
-        }
-      }, 1000);
-    },
-  );
+  return axios
+    .post<{
+      isValid: boolean;
+      status: string;
+      residenceName: string;
+      reservation: VoucherDetails;
+    }>('http://localhost:3001/verify-residence-code', { residenceCode: hotelCode, reservationId: voucherId })
+    .then((res) => res.data);
 };
 
 interface VoucherDetails {
-  firstName: string;
-  lastName: string;
+  id: string;
+  phoneNumber: string;
   idNumber: string;
-  soulsNumber: number;
-  hasPet: boolean;
-  isAccessibleRoom: boolean;
+  amount: number;
+  residence: string;
 }
 
 export const loader = async () => null;

@@ -1,0 +1,127 @@
+/* Rubik Light */
+@font-face {
+    font-family: 'Rubik';
+    src: url('/Rubik/static/Rubik-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+/* Rubik Light Italic */
+@font-face {
+    font-family: 'Rubik';
+    src: url('/Rubik/static/Rubik-LightItalic.ttf') format('truetype');
+    font-weight: 300;
+    font-style: italic;
+}
+
+/* Rubik Regular */
+@font-face {
+    font-family: 'Rubik';
+    src: url('/Rubik/static/Rubik-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+/* Rubik Italic */
+@font-face {
+    font-family: 'Rubik';
+    src: url('/Rubik/static/Rubik-Italic.ttf') format('truetype');
+    font-weight: 400;
+    font-style: italic;
+}
+
+/* Rubik Medium */
+@font-face {
+    font-family: 'Rubik';
+    src: url('/Rubik/static/Rubik-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+/* Rubik Medium Italic */
+@font-face {
+    font-family: 'Rubik';
+    src: url('/Rubik/static/Rubik-MediumItalic.ttf') format('truetype');
+    font-weight: 500;
+    font-style: italic;
+}
+
+/* Rubik SemiBold */
+@font-face {
+    font-family: 'Rubik';
+    src: url('/Rubik/static/Rubik-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+}
+
+/* Rubik SemiBold Italic */
+@font-face {
+    font-family: 'Rubik';
+    src: url('/Rubik/static/Rubik-SemiBoldItalic.ttf') format('truetype');
+    font-weight: 600;
+    font-style: italic;
+}
+
+/* Rubik Bold */
+@font-face {
+    font-family: 'Rubik';
+    src: url('/Rubik/static/Rubik-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+}
+
+/* Rubik Bold Italic */
+@font-face {
+    font-family: 'Rubik';
+    src: url('/Rubik/static/Rubik-BoldItalic.ttf') format('truetype');
+    font-weight: 700;
+    font-style: italic;
+}
+
+/* Rubik ExtraBold */
+@font-face {
+    font-family: 'Rubik';
+    src: url('/Rubik/static/Rubik-ExtraBold.ttf') format('truetype');
+    font-weight: 800;
+    font-style: normal;
+}
+
+/* Rubik ExtraBold Italic */
+@font-face {
+    font-family: 'Rubik';
+    src: url('/Rubik/static/Rubik-ExtraBoldItalic.ttf') format('truetype');
+    font-weight: 800;
+    font-style: italic;
+}
+
+/* Rubik Black */
+@font-face {
+    font-family: 'Rubik';
+    src: url('/Rubik/static/Rubik-Black.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+}
+
+/* Rubik Black Italic */
+@font-face {
+    font-family: 'Rubik';
+    src: url('/Rubik/static/Rubik-BlackItalic.ttf') format('truetype');
+    font-weight: 900;
+    font-style: italic;
+}
+
+/* Rubik Variable (normal) */
+@font-face {
+    font-family: 'Rubik';
+    src: url('/Rubik/Rubik-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+}
+
+/* Rubik Variable (italic) */
+@font-face {
+    font-family: 'Rubik';
+    src: url('/Rubik/Rubik-Italic-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: italic;
+}

@@ -143,6 +143,46 @@ export class AppController {
         };
     }
 
+    @Post('/verify-residence-code')
+    verifyResidenceCode(
+        @Body() body: { residenceCode: string; reservationId: string },
+    ): any {
+        const reservation = state.reservations[body.reservationId];
+        const residence = state.residences.find(
+            (residence) => residence.code === body.residenceCode,
+        );
+
+        if (!reservation) {
+            return {
+                isValid: false,
+                status: 'reservation-not-found',
+            };
+        }
+
+        if (!residence) {
+            return {
+                isValid: false,
+                status: 'residence-not-found',
+            };
+        }
+
+        if (reservation.residence !== residence.id) {
+            return {
+                isValid: false,
+                status: 'reservation-not-matching-residence',
+                residenceName: state.residences.find(
+                    (residence) => residence.id === reservation.residence,
+                )?.name,
+            };
+        }
+
+        return {
+            isValid: true,
+            status: 'success',
+            reservation: reservation,
+        };
+    }
+
     @Post('/reserve')
     reserve(@Query() query: ReserveQuery): any {
         let allocation = state.allocationsLeft[query.settlement] ?? {};

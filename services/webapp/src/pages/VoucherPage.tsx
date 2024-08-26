@@ -15,7 +15,7 @@ const VoucherVerifyPage: FC = () => {
     const fetchHotelName = () => {
       setIsLoading(true);
       axios
-        .get('http://localhost:3001/reservation', { params: { id: voucherId } })
+        .get('https://server.alona.live/voucher', { params: { id: voucherId } })
         .then((res) => {
           if (res.data.reservation) {
             setHotelName(res.data.reservation.residence);

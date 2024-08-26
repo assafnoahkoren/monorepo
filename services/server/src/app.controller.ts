@@ -205,7 +205,7 @@ export class AppController {
                     residence: residenceKeyToReserve,
                     settlement: query.settlement,
                     idNumber: query.idNumber,
-                    link: `https://alona.live/reservation/${id}`
+                    link: `https://alona.live/voucher/${id}`
                 }
 
                 return {
@@ -226,7 +226,7 @@ export class AppController {
             residence: query.residence,
             settlement: query.settlement,
             idNumber: query.idNumber,
-            link: `https://alona.live/reservation/${id}`
+            link: `https://alona.live/voucher/${id}`
         }
 
         return {

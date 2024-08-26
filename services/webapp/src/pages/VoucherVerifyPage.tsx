@@ -135,7 +135,7 @@ const validateHotelCode = async (hotelCode: string, voucherId: string) => {
       status: string;
       residenceName: string;
       reservation: VoucherDetails;
-    }>('http://localhost:3001/verify-residence-code', { residenceCode: hotelCode, reservationId: voucherId })
+    }>('https://server.alona.live/verify-residence-code', { residenceCode: hotelCode, reservationId: voucherId })
     .then((res) => res.data);
 };
 
@@ -145,6 +145,8 @@ interface VoucherDetails {
   idNumber: string;
   amount: number;
   residence: string;
+    firstName: string;
+    lastName: string;
 }
 
 export const loader = async () => null;

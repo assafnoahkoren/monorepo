@@ -97,8 +97,8 @@ export class AppController {
     runScenario(@Body() body: RunScenarioBody, @Query() query: RunScenarioQuery): any {
         const residences = body.residences.map((residence) => {
             return {
-                id: residence.id || residence.name,
-                name: residence.name,
+                id: residence.id?.slice(0,8) || residence.name?.slice(0,8),
+                name: residence.name?.slice(0,8),
                 rooms: residence.rooms,
             };
         });

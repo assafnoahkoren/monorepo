@@ -109,9 +109,15 @@ export class AppController {
 
         state.persons_in_rooms = body.persons_in_rooms;
         state.groups = body.groups;
-        state.residences = body.residences;
+        state.residences = body.residences.map(r => ({
+            ...r,
+            name: r.name.substring(0,8),
+            id: r.id.substring(0,8),
+            code: r.code.substring(0,8),
+        }));
         state.allocations = roomAllocator.assignments;
         state.allocationsLeft = JSON.parse(JSON.stringify(state.allocations));
+        state.reservations = {};
 
         return {
             query: query,

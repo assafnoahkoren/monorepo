@@ -97,8 +97,8 @@ export class AppController {
     runScenario(@Body() body: RunScenarioBody, @Query() query: RunScenarioQuery): any {
         const residences = body.residences.map((residence) => {
             return {
-                id: residence.id?.slice(0,8) || residence.name?.slice(0,8),
-                name: residence.name?.slice(0,8),
+                id: residence.id?.split('-')[0].trim() || residence.name?.split('-')[0].trim(),
+                name: residence.name?.split('-')[0].trim(),
                 rooms: residence.rooms,
             };
         });
@@ -111,9 +111,9 @@ export class AppController {
         state.groups = body.groups;
         state.residences = body.residences.map(r => ({
             ...r,
-            name: r.name?.slice(0,8),
-            id: r.id?.slice(0,8),
-            code: r.code?.slice(0,8),
+            name: r.name?.split('-')[0].trim(),
+            id: r.id?.split('-')[0].trim(),
+            code: r.code?.split('-')[0].trim() ,
         }));
         state.allocations = roomAllocator.assignments;
         state.allocationsLeft = JSON.parse(JSON.stringify(state.allocations));

@@ -1,5 +1,11 @@
-import { Allocations, AssignmentSettings, Group, GroupName, Residence } from "./Types";
-import millify from "millify";
+import {
+  Allocations,
+  AssignmentSettings,
+  Group,
+  GroupName,
+  Residence,
+} from './Types';
+import millify from 'millify';
 
 export class RoomAllocator {
   groups?: Group[] = undefined;
@@ -9,7 +15,11 @@ export class RoomAllocator {
   nullAssignments: Record<GroupName, number> = {};
   duration?: number = undefined;
 
-  constructor(groups?: Group[], residences?: Residence[], settings?: AssignmentSettings) {
+  constructor(
+    groups?: Group[],
+    residences?: Residence[],
+    settings?: AssignmentSettings,
+  ) {
     this.groups = groups;
     this.residences = residences;
     this.settings = settings;
@@ -49,12 +59,12 @@ export class RoomAllocator {
 
     const startTime = Date.now();
     const residencesMap: any = {};
-    this.residences?.forEach(residence => {
+    this.residences?.forEach((residence) => {
       residencesMap[residence.id] = residence;
     });
     this.residences = this.residences.sort((a, b) => a.rooms - b.rooms);
     const groupsMap: any = {};
-    this.groups?.forEach(group => {
+    this.groups?.forEach((group) => {
       groupsMap[group.name] = group;
     });
 
@@ -73,27 +83,47 @@ export class RoomAllocator {
     console.log(sortedGroups);
     for (const group of this.groups) {
       while (groupsNeededRoomsMap[group.name] > 0) {
-        const residence = getResidenceLogic(group, this.residences, roomsLeftMap);
+        const residence = getResidenceLogic(
+          group,
+          this.residences,
+          roomsLeftMap,
+        );
         if (!residence) {
-          this.nullAssignments[group.name] = this.nullAssignments[group.name] || 0;
+          this.nullAssignments[group.name] =
+            this.nullAssignments[group.name] || 0;
           this.nullAssignments[group.name] += 1;
           groupsNeededRoomsMap[group.name] -= 1;
         } else {
-          const roomsToTake = Math.min(groupsNeededRoomsMap[group.name], roomsLeftMap[residence.id]);
+          const roomsToTake = Math.min(
+            groupsNeededRoomsMap[group.name],
+            roomsLeftMap[residence.id],
+          );
           let roomsLeft = roomsLeftMap[residence.id];
           roomsLeft -= roomsToTake;
           groupsNeededRoomsMap[group.name] -= roomsToTake;
           roomsLeftMap[residence.id] = roomsLeft;
-          assignments[group.name] = assignments[group.name] || {}; // Initialize the object if it doesn't exist
-          assignments[group.name][residence.name] = assignments[group.name][residence.name] || 0; // Initialize the number if it doesn't exist
-          assignments[group.name][residence.name] += roomsToTake;
-
+          assignments[group.name] = assignments[group.name] || []; // Initialize the object if it doesn't exist
+          const residenceIndex = assignments[group.name].findIndex(
+            (a) => a.name === residence.name,
+          );
+          if (residenceIndex !== -1) {
+            assignments[group.name][residenceIndex] = {
+              name: residence.name,
+              city: residence.name, // TODO: Should be city here
+              roomsLeft: roomsToTake,
+            };
+          } else {
+            assignments[group.name][residenceIndex] = {
+              ...assignments[group.name][residenceIndex],
+              roomsLeft:
+                assignments[group.name][residenceIndex].roomsLeft + roomsToTake,
+            };
+          }
         }
       }
     }
 
     this.assignments = assignments;
-
 
     const endTime = Date.now();
     this.duration = endTime - startTime;
@@ -104,9 +134,14 @@ export class RoomAllocator {
   getAssignmentsStatistics() {
     if (!this.assignments) return null;
 
-    const numberOfAssignedRooms = Object.values(this.assignments).reduce((acc, assignments) => {
-      return acc + Object.values(assignments).reduce((acc, value) => acc + value, 0);
-    }, 0);
+    const numberOfAssignedRooms = Object.values(this.assignments).reduce(
+      (acc, assignments) => {
+        return (
+          acc + assignments.reduce((acc, value) => acc + value.roomsLeft, 0)
+        );
+      },
+      0,
+    );
 
     const totalRooms = this.getTotalRoomsNeededNumber() || 0;
     const numberOfUnassignedRooms = totalRooms - numberOfAssignedRooms;
@@ -117,10 +152,13 @@ export class RoomAllocator {
     let groupsThatWasSplit = [];
     for (const groupName in this.assignments) {
       const assignment = this.assignments[groupName];
-      if (Object.keys(assignment).length > 1) {
+      if (assignment.length > 1) {
         // If the group has more than one residence, it means that it was split
         groupsThatWasSplit.push(groupName);
-      } else if (Object.keys(assignment).length === 1 && Object.keys(this.nullAssignments).includes(groupName)) {
+      } else if (
+        assignment.length === 1 &&
+        Object.keys(this.nullAssignments).includes(groupName)
+      ) {
         groupsThatWasSplit.push(assignment);
       }
     }
@@ -129,9 +167,8 @@ export class RoomAllocator {
       numberOfAssignedRooms: millify(numberOfAssignedRooms),
       numberOfUnassignedRooms: millify(numberOfUnassignedRooms),
       percentageOfAssignedRooms: percentageOfAssignedRooms,
-      groupsThatWasSplit: groupsThatWasSplit
+      groupsThatWasSplit: groupsThatWasSplit,
     };
-
   }
 
   getAssignmentsAsRows() {
@@ -143,12 +180,11 @@ export class RoomAllocator {
     }[] = [];
     for (const groupName in this.assignments) {
       const group = this.assignments[groupName];
-      for (const residenceName in group) {
-        const residence = group[residenceName];
+      for (const residence of group) {
         rows.push({
           groupName: groupName,
-          residenceName: residenceName,
-          rooms: residence
+          residenceName: residence.name,
+          rooms: residence.roomsLeft,
         });
       }
     }
@@ -156,18 +192,17 @@ export class RoomAllocator {
       const nullAssignments = this.nullAssignments[groupName];
       rows.push({
         groupName: groupName,
-        residenceName: "ללא",
-        rooms: nullAssignments
+        residenceName: 'ללא',
+        rooms: nullAssignments,
       });
-
     }
     return rows;
   }
 
   getAssignmentsAsArray() {
     const results: {
-      residence: string,
-      group: string,
+      residence: string;
+      group: string;
       rooms: number;
     }[] = [];
 
@@ -176,7 +211,7 @@ export class RoomAllocator {
       results.push({
         residence: row.residenceName,
         group: row.groupName,
-        rooms: row.rooms
+        rooms: row.rooms,
       });
     });
     return results;
@@ -184,17 +219,23 @@ export class RoomAllocator {
 
   downloadAssignmentsAsFile() {
     const rows = this.getAssignmentsAsRows();
-    const csvContent = rows.map(row => `${row.groupName},${row.residenceName},${row.rooms}`).join("\n");
-    const blob = new Blob([csvContent], { type: "text/csv" });
+    const csvContent = rows
+      .map((row) => `${row.groupName},${row.residenceName},${row.rooms}`)
+      .join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
+    const link = document.createElement('a');
     link.href = url;
-    link.download = "שיבוצים.csv";
+    link.download = 'שיבוצים.csv';
     link.click();
   }
 }
 
-function getResidenceLogic(group: Group, residences: Residence[], roomsLeftMap: Record<string, number>): Residence | null {
+function getResidenceLogic(
+  group: Group,
+  residences: Residence[],
+  roomsLeftMap: Record<string, number>,
+): Residence | null {
   let bestMatch: Residence | null = null;
   for (const residence of residences) {
     const roomsLeft = roomsLeftMap[residence.id];

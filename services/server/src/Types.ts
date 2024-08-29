@@ -1,18 +1,21 @@
 export type Group = {
-    name: string,
-    rooms: number,
-}
+  name: string;
+  rooms: number;
+};
 
 export type Residence = {
-    id: string,
-    name: string,
-    rooms: number,
-}
+  id: string;
+  name: string;
+  rooms: number;
+};
 
 export type AssignmentSettings = {
-    roomCapacity: number,
-}
+  roomCapacity: number;
+};
 
 export type GroupName = string;
 export type ResidenceName = string;
-export type Allocations = Record<GroupName, Record<ResidenceName, number>>;
+export type Allocations = Record<
+  GroupName,
+  Array<{ name: string; city: string; roomsLeft: number }>
+>;

@@ -136,10 +136,10 @@ export class AppController {
     @Get('/availability')
     checkAvailability(@Query() query: CheckAvailabilityQuery): any {
         let allocation = state.allocationsLeft[query.settlement] ?? {};
-        console.log(allocation);
+        allocation = Object.fromEntries(Object.entries(allocation).filter(([key, value]) => value > 0));
+
         const detailedAllocations = []
         Object.keys(allocation).map(residenceId => {
-            console.log(residenceId);
             detailedAllocations.push({
                 residence: state.residences.find(residence => residence.id === residenceId),
                 availableRooms: allocation[residenceId],
@@ -148,7 +148,8 @@ export class AppController {
 
         return {
             query: query,
-            availableResidences: detailedAllocations
+            availableResidencesArray: detailedAllocations,
+            availableResidences: allocation
         };
     }
 

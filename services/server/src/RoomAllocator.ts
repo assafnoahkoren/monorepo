@@ -85,8 +85,8 @@ export class RoomAllocator {
           groupsNeededRoomsMap[group.name] -= roomsToTake;
           roomsLeftMap[residence.id] = roomsLeft;
           assignments[group.name] = assignments[group.name] || {}; // Initialize the object if it doesn't exist
-          assignments[group.name][residence.name] = assignments[group.name][residence.name] || 0; // Initialize the number if it doesn't exist
-          assignments[group.name][residence.name] += roomsToTake;
+          assignments[group.name][residence.id] = assignments[group.name][residence.id] || 0; // Initialize the number if it doesn't exist
+          assignments[group.name][residence.id] += roomsToTake;
 
         }
       }

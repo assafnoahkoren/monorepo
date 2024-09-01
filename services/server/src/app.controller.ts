@@ -32,9 +32,10 @@ type Reservation = {
     phoneNumber: string,
     idNumber: string,
     amount: number,
-    residence: string,
+    residenceId: string,
     settlement: string,
     link: string,
+    arrivedAt?: string,
 }
 
 const state = {
@@ -63,15 +64,17 @@ state.groups = [
 state.residences = [
     {
         code: "מלון דן",
-        "id": "מלון דן",
-        "name": "מלון דן",
-        "rooms": 120
+        id: "מלון דן",
+        name: "מלון דן",
+        city: "אילת",
+        rooms: 120
     },
     {
         code: "מלון לאונרדו",
-        "id": "מלון לאונרדו",
-        "name": "מלון לאונרדו",
-        "rooms": 90
+        id: "מלון לאונרדו",
+        name: "מלון לאונרדו",
+        city: "תל אביב",
+        rooms: 90
     }
 ]
 state.allocations = {
@@ -95,11 +98,15 @@ export class AppController {
 
     @Post(['/sheets', '/run-scenario'])
     runScenario(@Body() body: RunScenarioBody, @Query() query: RunScenarioQuery): any {
-        const residences = body.residences.map((residence) => {
+        const residences: Residence[] = body.residences.map((residence) => {
+            const [name, city] = residence.name?.split('-').map(s => s.trim());
+            const id = residence.id || residence.name;
             return {
-                id: residence.id?.split('-')[0].trim() || residence.name?.split('-')[0].trim(),
-                name: residence.name?.split('-')[0].trim(),
+                id: id,
+                name: name,
                 rooms: residence.rooms,
+                city: city,
+                code: id,
             };
         });
 
@@ -107,14 +114,9 @@ export class AppController {
         roomAllocator.assignRooms();
         const results = roomAllocator.getAssignmentsAsArray();
 
-        state.persons_in_rooms = body.persons_in_rooms;
+        state.persons_in_rooms = body.persons_in_rooms || 4;
         state.groups = body.groups;
-        state.residences = body.residences.map(r => ({
-            ...r,
-            name: r.name?.split('-')[0].trim(),
-            id: r.id?.split('-')[0].trim(),
-            code: r.code?.split('-')[0].trim() ,
-        }));
+        state.residences = residences;
         state.allocations = roomAllocator.assignments;
         state.allocationsLeft = JSON.parse(JSON.stringify(state.allocations));
         state.reservations = {};
@@ -134,11 +136,19 @@ export class AppController {
     @Get('/availability')
     checkAvailability(@Query() query: CheckAvailabilityQuery): any {
         let allocation = state.allocationsLeft[query.settlement] ?? {};
-        allocation = Object.fromEntries(Object.entries(allocation).filter(([key, value]) => value > 0));
+        console.log(allocation);
+        const detailedAllocations = []
+        Object.keys(allocation).map(residenceId => {
+            console.log(residenceId);
+            detailedAllocations.push({
+                residence: state.residences.find(residence => residence.id === residenceId),
+                availableRooms: allocation[residenceId],
+            })
+        });
 
         return {
             query: query,
-            availableResidences: allocation
+            availableResidences: detailedAllocations
         };
     }
 
@@ -155,7 +165,7 @@ export class AppController {
     ): any {
         const reservation = state.reservations[body.reservationId];
         const residence = state.residences.find(
-            (residence) => residence.code === body.residenceCode,
+            (residence) => residence.code.includes(body.residenceCode),
         );
 
         if (!reservation) {
@@ -172,15 +182,20 @@ export class AppController {
             };
         }
 
-        if (reservation.residence !== residence.id) {
+        reservation.arrivedAt = new Date().toISOString();
+
+        if (reservation.residenceId !== residence.id) {
             return {
                 isValid: false,
                 status: 'reservation-not-matching-residence',
+                arrivedAt: reservation.arrivedAt,
                 residenceName: state.residences.find(
-                    (residence) => residence.id === reservation.residence,
+                    (residence) => residence.id === reservation.residenceId,
                 )?.name,
             };
         }
+
+
 
         return {
             isValid: true,
@@ -208,7 +223,7 @@ export class AppController {
                     amount: query.amount,
                     id: id,
                     phoneNumber: query.phoneNumber,
-                    residence: residenceKeyToReserve,
+                    residenceId: residenceKeyToReserve,
                     settlement: query.settlement,
                     idNumber: query.idNumber,
                     link: `https://alona.live/voucher/${id}`
@@ -229,7 +244,7 @@ export class AppController {
             amount: query.amount,
             id: id,
             phoneNumber: query.phoneNumber,
-            residence: query.residence,
+            residenceId: query.residence,
             settlement: query.settlement,
             idNumber: query.idNumber,
             link: `https://alona.live/voucher/${id}`
